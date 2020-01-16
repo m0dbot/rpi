@@ -61,13 +61,12 @@ def doIfHigh(channel):
 		os.system ('ola_recorder -p testshow2 -u 1 -i 0 &')
 		GPIO.output(outp[6], GPIO.HIGH)
 	elif channel == inp[0]:
-		GPIO.output(outp[0], GPIO.HIGH)
-    
+		GPIO.output(outp[0], GPIO.HIGH)   
 #	i = i + 1
      
 # Ereignis deklarieren
 k = 0
-while k < 7:
+while k < len (outp):
 	GPIO.add_event_detect(inp[k], GPIO.FALLING, callback = doIfHigh, bouncetime = 200)
 	k = k + 1
 	
