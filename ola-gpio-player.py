@@ -5,7 +5,8 @@ import time
 import RPi.GPIO as GPIO
 import os
 
-# pin config for inputs and LEDs, must be the same number of variables! First one is freeze/blackout
+# pin config for inputs and LEDs, must be the same number of variables! First one is freeze/blackout button
+# if you do't want LEDs, enter unused GPIO pins
 GPIO.setmode(GPIO.BOARD)
 inp = [37, 35, 31, 23, 21, 7, 3] 
 outp = [38, 36, 32, 24, 22, 5, 11]
@@ -29,30 +30,26 @@ def doIfHigh(channel):
 	global inp
 	global outp
 #	print "Eingang " + str(channel) + " HIGH " + str(i)    # debug
-# stop recorder
+# -- stop recorder
 	os.system ('killall -9 ola_recorder')
 # all LEDs off
 	m = 0
 	while m < len (outp):
 		GPIO.output(outp[m], GPIO.LOW)
 		m = m + 1
-# LED on		
+# -- LED on		
 	GPIO.output(outp[channel], GPIO.HIGH)
-# start recorder again
-	if channel == inp[1]:
-		os.system ('ola_recorder -p pastellcolors -u 1 -i 0 &') # replace 'pastellcolors' with your recording's file name, located in /home/pi
-	elif channel == inp[2]:
-		os.system ('ola_recorder -p primarycolors2 -u 1 -i 0 &')
-	elif channel == inp[3]:
-		os.system ('ola_recorder -p wwcw -u 1 -i 0 &')
-	elif channel == inp[4]:
-		os.system ('ola_recorder -p softshow -u 1 -i 0 &')
-	elif channel == inp[5]:
-		os.system ('ola_recorder -p hardshow -u 1 -i 0 &')
-	elif channel == inp[6]:
-		os.system ('ola_recorder -p testshow2 -u 1 -i 0 &')
-#	elif channel == inp[0]: # freeze button. For blackout, uncomment this line and next and create a 'black' file with ola_recorder
-#		os.system ('ola_recorder -p black -u 1 -i 0 &') 
+# -- start recorder again
+	if channel == inp[0]: # -- freeze/blackout button. 
+#		os.system ('ola_recorder -p black -u 1 -i 0 &') # -- For blackout, uncomment this line and create a 'black' file with ola_recorder
+		GPIO.output(outp[0], GPIO.HIGH)
+	else:
+		n = 1
+		while n < len (outp):
+			if channel == inp[n]:
+				os.system ('ola_recorder -p show' + n + ' -u 1 -i 0 &') # name your ola_recorder recordings show1, show2... no suffix, and place them in /home/pi  
+				GPIO.output(outp[n], GPIO.HIGH)
+
 
 #	i = i + 1   # debug
      
